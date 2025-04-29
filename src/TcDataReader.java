@@ -24,26 +24,28 @@ public class TcDataReader {
             int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
+                String[] fields = line.split(",");
+
                 try {
-                    String[] fields = line.split(",");
 
                     String tcItemRevId = fields[0];
                     String sapMaterialNumber = fields[1];
                     int set = extractNumberFromTcString(fields[2]);
                     int afo = extractNumberFromTcString(fields[3]);
-                    int clamping = extractNumberFromTcString(fields[4]);
-                    String sapWorkplace = fields[5];
-                    String tcProgramNumber = fields[6];
-                    int revision = Integer.parseInt(fields[7]);
-                    String partFamily = fields[8];
-                    double tcTime = Double.parseDouble(fields[9]);
-                    int pieceCount = Integer.parseInt(fields[10]);
-                    String toolNumber = fields[11];
-                    double tcToolTime = Double.parseDouble(fields[12]);
-                    int toolSequence = Integer.parseInt(fields[13]);
+                    String sapWorkplace = fields[4];
+                    int clamping = extractNumberFromTcString(fields[5]);
+                    //Index 6: Releasestatus
+                    String tcProgramNumber = fields[7];
+                    int revision = Integer.parseInt(fields[8]);
+                    String partFamily = fields[9];
+                    double tcTime = Double.parseDouble(fields[10]);
+                    int pieceCount = Integer.parseInt(fields[11]);
+                    String toolNumber = fields[12];
+                    double tcToolTime = Double.parseDouble(fields[13]);
+                    int toolSequence = Integer.parseInt(fields[14]);
 
                     tcToolUsageRecords.add(new TcToolUsageRecord(tcItemRevId, sapMaterialNumber, set, afo, clamping, sapWorkplace, tcProgramNumber, revision, partFamily, tcTime, pieceCount, toolNumber, tcToolTime, toolSequence));
-                } catch (NullPointerException | IllegalStateException e) {
+                } catch (NullPointerException | IllegalStateException | NoSuchFieldException e) {
                     System.out.println("Error reading line " + lineNumber);
                     System.out.println(line);
                     e.printStackTrace();
@@ -54,12 +56,14 @@ public class TcDataReader {
         return tcToolUsageRecords;
     }
 
-    private int extractNumberFromTcString(String tcString) throws IllegalStateException {
+    private int extractNumberFromTcString(String tcString) throws IllegalStateException, NoSuchFieldException {
         Pattern pattern = Pattern.compile("^\\D*(\\d{1,2})\\D*$");
         Matcher matcher = pattern.matcher(tcString);
-        int number;
+        if(matcher.find()) {
+            String match = matcher.group(1);
+            return Integer.parseInt(match);
+        }
 
-        number = Integer.parseInt(matcher.group());
-        return number;
+        throw new NoSuchFieldException("No match found");
     }
 }
