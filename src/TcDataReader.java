@@ -28,7 +28,7 @@ public class TcDataReader {
 
                 try {
 
-                    String tcItemRevId = fields[0];
+                    String tcItemId = fields[0];
                     String sapMaterialNumber = fields[1];
                     int set = extractNumberFromTcString(fields[2]);
                     int afo = extractNumberFromTcString(fields[3]);
@@ -44,7 +44,7 @@ public class TcDataReader {
                     double tcToolTime = Double.parseDouble(fields[13]);
                     int toolSequence = Integer.parseInt(fields[14]);
 
-                    tcToolUsageRecords.add(new TcToolUsageRecord(tcItemRevId, sapMaterialNumber, set, afo, clamping, sapWorkplace, tcProgramNumber, revision, partFamily, tcTime, pieceCount, toolNumber, tcToolTime, toolSequence));
+                    tcToolUsageRecords.add(new TcToolUsageRecord(tcItemId, sapMaterialNumber, set, afo, clamping, sapWorkplace, tcProgramNumber, revision, partFamily, tcTime, pieceCount, toolNumber, tcToolTime, toolSequence));
                 } catch (NullPointerException | IllegalStateException | NoSuchFieldException e) {
                     System.out.println("Error reading line " + lineNumber);
                     System.out.println(line);
