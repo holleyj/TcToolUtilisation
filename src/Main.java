@@ -2,6 +2,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,17 +11,21 @@ import java.util.Map;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) throws IOException {
-        String path = args[0];
-        System.out.println(path);
+        String filePath = args[0];
+        System.out.println(filePath);
 
-        TcDataReader dataReader = new TcDataReader();
+        String targetPartFamily = "Leiste"; //hier die gesuchte Teilefamilie eintragen
 
-        Map<String, List<TcToolUsageRecord>> data = dataReader.readDataIndexedByPartFamily(path);
+        SearchAlgorithm[] algorithms = new SearchAlgorithm[] {
+                new HashSearch(filePath),
+                new JumpSearch(filePath)
+        };
 
-        String targetPartFamily = "Leiste"; // ← hier die gesuchte Teilefamilie eintragen
-        List<TcToolUsageRecord> resultList = data.getOrDefault(targetPartFamily, Collections.emptyList());
-
-        PrintData(resultList, 100);
+        for (SearchAlgorithm algorithm : algorithms) {
+            System.out.println(algorithm.getClass().getSimpleName());
+            List<TcToolUsageRecord> results = algorithm.search(targetPartFamily);
+            PrintData(results, 10);
+        }
     }
 
     public static void PrintData(List<TcToolUsageRecord> tcToolUsageRecords, int maxPrintCount) {
